@@ -1,0 +1,27 @@
+{
+  "name": "nero-cli",
+  "version": "1.0.0",
+  "description": "node nero",
+  "main": "index.js",
+  "bin": {
+    "nero": "bin/nero"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Copyes/nero-cli.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Copyes/nero-cli/issues"
+  },
+  "homepage": "https://github.com/Copyes/nero-cli#readme",
+  "dependencies": {
+    "chalk": "^2.3.2",
+    "commander": "^2.15.0",
+    "ora": "^2.0.0"
+  }
+}
