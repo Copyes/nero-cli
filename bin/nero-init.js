@@ -66,3 +66,18 @@ let preProjectName = projectName
 if (!hasSlash) {
   return program.help()
 }
+
+console.log(projectName)
+console.log(projectDirName)
+console.log(origin)
+
+function setOrigin() {
+  try {
+    shell.cd(projectDirPath)
+    shell.exec(`git init`, { async: false })
+    shell.exec(`git remote add origin ${origin}`, { async: false })
+    log.tips(chalk.green(`${projectName} is related to remote repo: ${origin}`))
+  } catch (e) {
+    log.tips(chalk.red(`set git remote origin faild: ${e.message}`))
+  }
+}
