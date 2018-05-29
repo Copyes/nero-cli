@@ -6,46 +6,14 @@ const program = require('commander')
 const { resolve } = require('path')
 
 let pkg = require('../package.json')
-const res = command => resolve(__dirname, '../lib', command)
+// const res = command => resolve(__dirname, '../lib', command)
 
 // 查看版本和相关用法
-program.version(pkg.version, '-v, --version').usage('<command> [options]')
-
-// 添加一个模版
 program
-  .command('add')
-  .description('Add a new template path')
-  .alias('a')
-  .action(() => {
-    require(res('add'))
-  })
-
-// 列出所有的模版列表
-program
-  .command('list')
-  .description('Show the templates list')
-  .alias('ls')
-  .action(() => {
-    require(res('list'))
-  })
-// 初始化一个项目
-program
-  .command('init')
-  .description('Generate a new project')
-  .alias('i')
-  .action(() => {
-    require(res('init'))
-  })
-
-program
-  .command('delete')
-  .description('Delete a template')
-  .alias('d')
-  .action(() => {
-    require(res('delete'))
-  })
-
-program.parse(process.argv)
-if (!program.args.length) {
-  program.help()
-}
+  .version(pkg.version, '-v, --version')
+  .usage('<command> [options]')
+  .command('test', 'hello')
+  .command('init', 'generate a new project from a template')
+  .command('list', 'show the templates')
+  .command('add', 'add a new project into template file')
+  .parse(process.argv)
