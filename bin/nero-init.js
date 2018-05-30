@@ -12,6 +12,8 @@ const download = require('download-git-repo')
 const shell = require('shelljs')
 
 const log = require('../lib/log.js')
+const utils = require('../lib/utils.js')
+const checkRepos = require('../lib/check-repos.js')
 // usage
 program
   .usage('<template-name>', '[project-name]')
@@ -69,7 +71,6 @@ if (!hasSlash) {
 
 console.log(projectName)
 console.log(projectDirName)
-console.log(origin)
 
 function setOrigin() {
   try {
@@ -80,4 +81,80 @@ function setOrigin() {
   } catch (e) {
     log.tips(chalk.red(`set git remote origin faild: ${e.message}`))
   }
+}
+
+// 判断当前路径是不是存在
+if (utils.isExist(projectDirPath)) {
+  inquirer
+    .prompt([
+      {
+        type: 'confirm',
+        message:
+          projectDirName === '.'
+            ? 'Generate project in current directory?'
+            : 'Target directory exists. Continue?',
+        name: 'ok'
+      }
+    ])
+    .then(answers => {
+      if (answers.ok) {
+        log.tips()
+        // log.success('成功啦～')
+        runTask()
+      }
+    })
+} else {
+  let normalizeName = ''
+  let index = projectName.indexOf('/')
+
+  if (projectDirName.startsWith('/') || /^\w:/.test(projectDirName)) {
+    normalizeName =
+      projectName.substr(index).split('/')[0] ||
+      projectName.substr(index).split('/')[1]
+    normalizeName = normalizeName ? normalizeName : 'demo'
+  } else if (index >= 0) {
+    normalizeName = projectName.split('/')[0]
+  }
+  if (normalizeName && normalizeName !== projectName) {
+    inquirer
+      .prompt([
+        {
+          type: 'confirm',
+          message: `Your project's name will be created as ${normalizeName}`,
+          name: 'ok'
+        }
+      ])
+      .then(answers => {
+        if (answers.ok) {
+          log.tips()
+          projectName = normalizeName
+          runTask()
+        }
+        return
+      })
+  } else {
+    runTask()
+  }
+}
+
+function runTask() {
+  let arr = template.split(path.sep)
+  if (arr.length < 2 || !arr[0] || !arr[1]) {
+    return program.help()
+  }
+  log.tips()
+  log.tips(
+    chalk.red(
+      `Local template ${template} not found. Will check it from github.`
+    )
+  )
+  log.tips()
+
+  // convert template path to xxx/xxx
+  template = template
+    .split(path.sep)
+    .slice(0, 2)
+    .join('/')
+  // check repo from github.com
+  checkRepos(template, function() {})
 }
