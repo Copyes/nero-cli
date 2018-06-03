@@ -1,19 +1,10 @@
 #!/usr/bin/env node
 
-// 定义脚手架的文件路径
-process.env.NODE_PATH = __dirname + '/../node_modules/'
-const program = require('commander')
-const { resolve } = require('path')
+const pkg = require('../package.json')
 
-let pkg = require('../package.json')
-// const res = command => resolve(__dirname, '../lib', command)
-
-// 查看版本和相关用法
-program
-  .version(pkg.version, '-v, --version')
+require('commander')
+  .version(pkg.version)
   .usage('<command> [options]')
-  .command('test', 'hello')
   .command('init', 'generate a new project from a template')
-  .command('list', 'show the templates')
-  .command('add', 'add a new project into template file')
+  .command('token', 'set auth token to get a higher rate limit of api requests')
   .parse(process.argv)
