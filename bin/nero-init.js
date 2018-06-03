@@ -14,6 +14,7 @@ const shell = require('shelljs')
 const log = require('../lib/log.js')
 const utils = require('../lib/utils.js')
 const checkRepos = require('../lib/check-repos.js')
+const generate = require('../lib/generate.js')
 // usage
 program
   .usage('<template-name>', '[project-name]')
@@ -81,6 +82,52 @@ function setOrigin() {
   } catch (e) {
     log.tips(chalk.red(`set git remote origin faild: ${e.message}`))
   }
+}
+
+function downloadAndGenerate(template) {
+  let temp = os.tmpdir() + 'nero-template-' + uuidV1()
+  let spinner = ora({
+    text: `start downloading template: ${template}`,
+    color: 'blue'
+  }).start()
+
+  download(template, temp, { clone: clone }, err => {
+    process.on('exit', () => rm(temp))
+    if (err) {
+      spinner.text = chalk.red(
+        `Failed to download template ${template}: ${err.message.trim()}`
+      )
+      spinner.fail()
+      process.exit(1)
+    }
+    spinner.text = chalk.green(`${template} downloaded success`)
+    spinner.succeed()
+    log.tips()
+
+    generate(projectName, tmp, projectDirPath, (err, msg = '') => {
+      if (err) {
+        log.error(`Generated error: ${err.message.trim()}`)
+      }
+
+      if (origin && /\.git$/.test(origin)) {
+        setOrigin()
+      }
+
+      if (msg) {
+        let re = /{{[^{}]+}}/g
+        log.tips(
+          '\n' +
+            msg
+              .replace(re, preProjectName)
+              .split(/\r?\n/g)
+              .map(function(line) {
+                return '   ' + line
+              })
+              .join('\n')
+        )
+      }
+    })
+  })
 }
 
 // 判断当前路径是不是存在
@@ -156,5 +203,5 @@ function runTask() {
     .slice(0, 2)
     .join('/')
   // check repo from github.com
-  checkRepos(template, function() {})
+  checkRepos(template, downloadAndGenerate)
 }
