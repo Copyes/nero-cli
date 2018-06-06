@@ -6,7 +6,7 @@
   "bin": {
     "nero": "bin/nero",
     "nero-init": "bin/nero-init",
-    "nero-list": "bin/nero-list"
+    "nero-token": "bin/nero-token"
   },
   "scripts": {
     "lint": "eslint lib/*.js --fix",
