@@ -1,0 +1,77 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+const chalk = require('chalk')
+const fs = require('fs')
+const path = require('path')
+
+const log = require('../lib/log')
+const utils = require('../lib/utils')
+
+// usage
+program
+  .usage('-u your-github-user-name -p your-personal-token')
+  .option('-u, --username', 'your github user name')
+  .option('-p, --password', 'your github personal token')
+  .description(
+    chalk.gray('# Set auth token to get a higher rate limit of api requests:') +
+      '\n\n  https://developer.github.com/v3/auth/#basic-authentication'
+  )
+  .parse(process.argv)
+
+// help
+
+program.on('--help', () => {
+  log.tips('  Examples:')
+  log.tips()
+  log.tips(
+    chalk.gray(
+      '    # set auth token to get a higher rate limit of api requests'
+    )
+  )
+  log.tips('    $ nero token -u your-github-user-name -p your-personal-token')
+  log.tips()
+  log.success('  Check out the documentation for more details:\n')
+  log.tips('      https://developer.github.com/v3/auth/#basic-authentication')
+})
+
+function help() {
+  program.parse(process.argv)
+  if (program.args.length < 2) {
+    return program.help()
+  }
+}
+help()
+
+process.on('exit', () => log.tips())
+
+/**
+ * save token
+ */
+function saveToken() {
+  let token = {
+    username: '',
+    password: ''
+  }
+
+  if (program.args[0].length > program.args[1].length) {
+    token.username = program.args[1]
+    token.password = program.args[0]
+  } else {
+    token.username = program.args[0]
+    token.password = program.args[1]
+  }
+
+  let binParh = utils.neroBinPath()
+  let tokenPath = path.normalize(
+    path.join(binParh, '../../', 'lib/node_modules/nero/lib/token.json')
+  )
+  fs.writeFile(tokenPath, JSON.stringify(token), { encoding: 'utf-8' }, err => {
+    log.tips()
+    if (err) {
+      log.error(err.message)
+    }
+    log.success(`token saved at ${tokenPath}`)
+  })
+}
+saveToken()

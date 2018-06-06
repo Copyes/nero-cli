@@ -212,7 +212,7 @@ function runTask() {
     // check repo from github.com
     // checkVersion(() => {
     checkRepos(template, downloadAndGenerate)
-    // });
+    // })
   }
 }
 
