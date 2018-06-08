@@ -232,7 +232,6 @@ function downloadAndGenerate(template) {
   download(template, tmp, { clone: clone }, err => {
     process.on('exit', () => rm(tmp))
     if (err) {
-      //err.code/err.message;
       spinner.text = chalk.red(
         `Failed to download template ${template}: ${err.message.trim()}`
       )
