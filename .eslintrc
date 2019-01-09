@@ -15,7 +15,6 @@
     "linebreak-style": [2, "unix"],
     "semi": [2, "never"],
     "no-trailing-spaces": 2,
-    "space-before-function-paren": [2, "never"],
     "eqeqeq": [2, "allow-null"],
     "no-console": 0,
     "no-cond-assign": 0,

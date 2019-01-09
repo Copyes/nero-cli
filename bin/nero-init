@@ -15,7 +15,7 @@ const log = require('../lib/log')
 const checkRepos = require('../lib/check-repos')
 const generate = require('../lib/generate')
 const utils = require('../lib/utils')
-// const checkVersion = require('../lib/check-version')
+const checkVersion = require('../lib/check-version')
 
 /**
  * Usage.
@@ -30,7 +30,7 @@ program
  * Help.
  */
 
-program.on('--help', function() {
+program.on('--help', function () {
   log.tips('  Examples:')
   log.tips()
   log.tips(
@@ -87,8 +87,12 @@ function setOrigin() {
   // set origin
   try {
     shell.cd(projectDirPath)
-    shell.exec(`git init`, { async: false })
-    shell.exec(`git remote add origin ${origin}`, { async: false })
+    shell.exec('git init', {
+      async: false
+    })
+    shell.exec(`git remote add origin ${origin}`, {
+      async: false
+    })
     log.tips(chalk.green(`${projectName} is related to remote repo: ${origin}`))
   } catch (e) {
     log.tips(chalk.red(`set git remote origin faild: ${e.message}`))
@@ -97,16 +101,12 @@ function setOrigin() {
 
 if (utils.isExist(projectDirPath)) {
   inquirer
-    .prompt([
-      {
-        type: 'confirm',
-        message:
-          projectDirName === '.'
-            ? 'Generate project in current directory?'
-            : 'Target directory exists. Continue?',
-        name: 'ok'
-      }
-    ])
+    .prompt([{
+      type: 'confirm',
+      message: projectDirName === '.' ?
+        'Generate project in current directory?' : 'Target directory exists. Continue?',
+      name: 'ok'
+    }])
     .then(answers => {
       if (answers.ok) {
         log.tips()
@@ -122,27 +122,24 @@ if (utils.isExist(projectDirPath)) {
     normalizeName =
       projectName.substr(index).split('/')[0] ||
       projectName.substr(index).split('/')[1]
-    normalizeName = normalizeName ? normalizeName : 'demo'
+    normalizeName = normalizeName || 'demo'
   } else if (index >= 0) {
     normalizeName = projectName.split('/')[0]
   }
 
   if (normalizeName && normalizeName !== projectName) {
     inquirer
-      .prompt([
-        {
-          type: 'confirm',
-          message: `Your project's name will be created as ${normalizeName}`,
-          name: 'ok'
-        }
-      ])
+      .prompt([{
+        type: 'confirm',
+        message: `Your project's name will be created as ${normalizeName}`,
+        name: 'ok'
+      }])
       .then(answers => {
         if (answers.ok) {
           log.tips()
           projectName = normalizeName
           runTask()
         }
-        return
       })
   } else {
     runTask()
@@ -154,9 +151,9 @@ function runTask() {
 
   if (isLocalTemplate) {
     let templatePath =
-      template.startsWith('/') || /^\w:/.test(template)
-        ? template
-        : path.normalize(path.join(process.cwd(), template))
+      template.startsWith('/') || /^\w:/.test(template) ?
+      template :
+      path.normalize(path.join(process.cwd(), template))
 
     if (utils.isExist(templatePath)) {
       log.success(`Template is from ${templatePath}`)
@@ -175,13 +172,13 @@ function runTask() {
           let re = /{{[^{}]+}}/g
           log.tips(
             '\n' +
-              msg
-                .replace(re, projectName)
-                .split(/\r?\n/g)
-                .map(function(line) {
-                  return '   ' + line
-                })
-                .join('\n')
+            msg
+            .replace(re, projectName)
+            .split(/\r?\n/g)
+            .map(function (line) {
+              return '   ' + line
+            })
+            .join('\n')
           )
         }
       })
@@ -210,9 +207,9 @@ function runTask() {
       .slice(0, 2)
       .join('/')
     // check repo from github.com
-    // checkVersion(() => {
-    checkRepos(template, downloadAndGenerate)
-    // })
+    checkVersion(() => {
+      checkRepos(template, downloadAndGenerate)
+    })
   }
 }
 
@@ -229,7 +226,9 @@ function downloadAndGenerate(template) {
     color: 'blue'
   }).start()
   log.tips(template)
-  download(template, tmp, { clone: clone }, err => {
+  download(template, tmp, {
+    clone: clone
+  }, err => {
     process.on('exit', () => rm(tmp))
     if (err) {
       spinner.text = chalk.red(
@@ -255,13 +254,13 @@ function downloadAndGenerate(template) {
         let re = /{{[^{}]+}}/g
         log.tips(
           '\n' +
-            msg
-              .replace(re, preProjectName)
-              .split(/\r?\n/g)
-              .map(function(line) {
-                return '   ' + line
-              })
-              .join('\n')
+          msg
+          .replace(re, preProjectName)
+          .split(/\r?\n/g)
+          .map(function (line) {
+            return '   ' + line
+          })
+          .join('\n')
         )
       }
     })
